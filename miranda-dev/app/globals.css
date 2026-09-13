@@ -3,7 +3,7 @@
 :root {
   /* ── TRANSITION SPEED DURATION ────────────────────────────────────────── */
   /* Change this value (e.g. 0.6s, 0.8s, 1s) to adjust transition speed.    */
-  --theme-transition-time: 0.5s;
+  --theme-transition-time: 0s;
   /* ─────────────────────────────────────────────────────────────────────── */
 
   --bg: #f5ebd0;
@@ -38,13 +38,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ensure ALL components, text, icons, and borders transition simultaneously */
-*,
-*::before,
-*::after {
-  transition: background-color var(--theme-transition-time) cubic-bezier(0.4, 0, 0.2, 1),
-    color var(--theme-transition-time) cubic-bezier(0.4, 0, 0.2, 1),
-    border-color var(--theme-transition-time) cubic-bezier(0.4, 0, 0.2, 1),
-    fill var(--theme-transition-time) cubic-bezier(0.4, 0, 0.2, 1),
-    stroke var(--theme-transition-time) cubic-bezier(0.4, 0, 0.2, 1);
+/* SVGs inherit color from their parent so they change with the theme toggle */
+svg {
+  fill: currentColor;
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   MarkGithubIcon,
   ThreeBarsIcon,
@@ -9,16 +9,12 @@ import {
   StarIcon,
   AccessibilityIcon,
   MoonIcon,
+  SunIcon,
   MuteIcon,
-  PersonIcon,
+  UnmuteIcon,
 } from "@primer/octicons-react";
 import { createClient } from "@/utils/supabase/client";
 
-// ── CHANGE THEME TRANSITION DURATION HERE (in milliseconds) ───────────────────
-// To make the transition faster or slower, change this value (e.g. 500 = 0.5s, 800 = 0.8s, 1000 = 1.0s).
-// Also update `--theme-transition-time` in app/globals.css to match (e.g. 0.5s).
-const TRANSITION_DURATION_MS = 500;
-// ─────────────────────────────────────────────────────────────────────────────
 
 const AVATAR_IMAGES = [
   "/viewers/gh1.jpeg",
@@ -31,62 +27,73 @@ const AVATAR_IMAGES = [
 export default function HeaderNav() {
   const [viewerCount, setViewerCount] = useState<number>(2);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isSoundOn, setIsSoundOn] = useState<boolean>(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // ── Synchronized Radial Wave & Simultaneous Color Transition ──
-  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (typeof window === "undefined" || typeof document === "undefined") return;
+  // ── Web Audio: click sound ──
+  const playClick = () => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(900, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+  };
 
+  // ── Web Audio: keystroke sound ──
+  const playKey = () => {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    const bufSize = Math.floor(ctx.sampleRate * 0.04);
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start();
+  };
+
+  // ── Keydown listener for typing sounds ──
+  useEffect(() => {
+    if (!isSoundOn) return;
+    const onKey = () => playKey();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isSoundOn]);
+
+  // ── Toggle sound on/off ──
+  const toggleSound = () => {
+    if (!isSoundOn) {
+      // Create AudioContext on first user gesture
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+    }
+    setIsSoundOn((prev) => !prev);
+  };
+
+  // ── Instant Theme Toggle ──
+  const toggleTheme = () => {
+    if (isSoundOn) playClick();
     const nextDark = !isDarkMode;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-
-    // Instantly switch theme class so all component colors transition simultaneously
     setIsDarkMode(nextDark);
     if (nextDark) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-
-    // Calculate maximum radius to screen corners
-    const maxRadius = Math.max(
-      Math.hypot(x, y),
-      Math.hypot(window.innerWidth - x, y),
-      Math.hypot(x, window.innerHeight - y),
-      Math.hypot(window.innerWidth - x, window.innerHeight - y)
-    );
-    const endRadius = maxRadius * 1.1;
-
-    // Create translucent wave ring radiating from dark mode button
-    const wave = document.createElement("div");
-    wave.style.position = "fixed";
-    wave.style.left = `${x}px`;
-    wave.style.top = `${y}px`;
-    wave.style.width = "0px";
-    wave.style.height = "0px";
-    wave.style.borderRadius = "50%";
-    wave.style.transform = "translate(-50%, -50%)";
-    wave.style.backgroundColor = nextDark ? "rgba(13, 17, 23, 0.35)" : "rgba(245, 235, 208, 0.35)";
-    wave.style.border = `2px solid ${nextDark ? "#30363d" : "#7f011f"}`;
-    wave.style.boxShadow = `0 0 30px ${nextDark ? "rgba(48, 54, 61, 0.4)" : "rgba(127, 1, 31, 0.25)"}`;
-    wave.style.zIndex = "9999";
-    wave.style.pointerEvents = "none";
-    wave.style.transition = `width ${TRANSITION_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), height ${TRANSITION_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), opacity ${TRANSITION_DURATION_MS}ms ease`;
-
-    document.body.appendChild(wave);
-
-    requestAnimationFrame(() => {
-      wave.style.width = `${endRadius * 2}px`;
-      wave.style.height = `${endRadius * 2}px`;
-      wave.style.opacity = "0";
-    });
-
-    setTimeout(() => {
-      if (wave.parentNode) {
-        wave.parentNode.removeChild(wave);
-      }
-    }, TRANSITION_DURATION_MS);
   };
 
   // ── Supabase Realtime Presence Tracking ──
@@ -156,7 +163,7 @@ export default function HeaderNav() {
             <ThreeBarsIcon size={18} />
           </button>
 
-          <MarkGithubIcon size={32} fill="var(--border)" />
+          <span style={{ color: "var(--border)" }}><MarkGithubIcon size={32} /></span>
 
           <span
             className="font-semibold select-none"
@@ -219,7 +226,7 @@ export default function HeaderNav() {
             </span>
           </div>
 
-          {/* Slot 2: Dark Mode (Synchronized Spreading Radial Wave) */}
+          {/* Slot 2: Dark Mode / Light Mode toggle */}
           <button
             type="button"
             onClick={toggleTheme}
@@ -232,14 +239,17 @@ export default function HeaderNav() {
               border: "1.5px solid var(--border)",
               color: "var(--muted)",
             }}
-            title="Toggle Dark / Light Mode"
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            <MoonIcon size={18} fill="var(--border)" />
+            {isDarkMode ? <SunIcon size={18} /> : <MoonIcon size={18} />}
           </button>
 
-          {/* Slot 3: Sounds (Static) */}
-          <div
-            className="flex items-center justify-center rounded-[10px]"
+          {/* Slot 3: Sound toggle */}
+          <button
+            type="button"
+            onClick={() => { if (isSoundOn) playClick(); toggleSound(); }}
+            aria-label={isSoundOn ? "Mute sounds" : "Unmute sounds"}
+            className="flex items-center justify-center rounded-[10px] cursor-pointer"
             style={{
               width: 36,
               height: 36,
@@ -247,24 +257,28 @@ export default function HeaderNav() {
               border: "1.5px solid var(--border)",
               color: "var(--muted)",
             }}
-            title="Sounds (Static)"
+            title={isSoundOn ? "Mute" : "Unmute"}
           >
-            <MuteIcon size={18} fill="var(--border)" />
-          </div>
+            {isSoundOn ? <UnmuteIcon size={18} /> : <MuteIcon size={18} />}
+          </button>
 
-          {/* Slot 4: Profile (Static) */}
+          {/* Slot 4: Profile photo */}
           <div
-            className="flex items-center justify-center rounded-[10px]"
+            className="flex items-center justify-center rounded-[10px] overflow-hidden"
             style={{
               width: 36,
               height: 36,
-              backgroundColor: "var(--surface)",
               border: "1.5px solid var(--border)",
-              color: "var(--muted)",
+              backgroundColor: "var(--surface)",
             }}
-            title="Profile (Static)"
+            title="Profile"
           >
-            <PersonIcon size={18} fill="var(--border)" />
+            <img
+              src="/profile.jpeg"
+              alt="Profile"
+              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
           </div>
         </div>
       </div>
@@ -287,7 +301,7 @@ export default function HeaderNav() {
             borderBottom: "2px solid var(--border)",
           }}
         >
-          <BookIcon size={16} fill="var(--border)" />
+          <BookIcon size={16} />
           Overview
         </a>
 
@@ -301,7 +315,7 @@ export default function HeaderNav() {
             borderBottom: "2px solid transparent",
           }}
         >
-          <GlobeIcon size={16} fill="var(--muted)" />
+          <GlobeIcon size={16} />
           Experiences
         </a>
 
@@ -315,7 +329,7 @@ export default function HeaderNav() {
             borderBottom: "2px solid transparent",
           }}
         >
-          <TableIcon size={16} fill="var(--muted)" />
+          <TableIcon size={16} />
           Projects
         </a>
 
@@ -329,7 +343,7 @@ export default function HeaderNav() {
             borderBottom: "2px solid transparent",
           }}
         >
-          <StarIcon size={16} fill="var(--muted)" />
+          <StarIcon size={16} />
           Achievements
         </a>
 
@@ -343,7 +357,7 @@ export default function HeaderNav() {
             borderBottom: "2px solid transparent",
           }}
         >
-          <AccessibilityIcon size={16} fill="var(--muted)" />
+          <AccessibilityIcon size={16} />
           Connect
         </a>
       </div>
