@@ -54,7 +54,8 @@ export default function OverviewPanel() {
 
   return (
     <div
-      className="max-w-[1280px] mx-auto px-4 md:px-8 py-18"
+      id="overview"
+      className="max-w-[1280px] mx-auto px-4 md:px-8 py-18 scroll-mt-[130px]"
       style={{ backgroundColor: "var(--bg)", minHeight: "calc(100vh - 112px)" }}
     >
       <div className="flex flex-col md:flex-row gap-8 items-stretch">

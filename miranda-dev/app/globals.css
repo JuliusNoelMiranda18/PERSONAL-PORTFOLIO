@@ -28,6 +28,11 @@ body.dark {
   --button-text: #c9d1d9;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 112px;
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
