@@ -84,6 +84,17 @@ export default function HeaderNav() {
     setIsSoundOn((prev) => !prev);
   };
 
+  // ── Sync Dark Mode state with html class ──
+  useEffect(() => {
+    const checkDark = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   // ── Instant Theme Toggle ──
   const toggleTheme = () => {
     if (isSoundOn) playClick();
@@ -163,7 +174,16 @@ export default function HeaderNav() {
             <ThreeBarsIcon size={18} />
           </button>
 
-          <span style={{ color: "var(--border)" }}><MarkGithubIcon size={32} /></span>
+          <img
+            src={isDarkMode ? "/logo/black_logo.png" : "/logo/red_logo.png"}
+            alt="JoulesMiranda logo"
+            className="w-8 h-8 object-contain shrink-0"
+            style={{
+              width: 32,
+              height: 32,
+              filter: isDarkMode ? "invert(1)" : "none",
+            }}
+          />
 
           <span
             className="font-semibold select-none"
@@ -262,24 +282,13 @@ export default function HeaderNav() {
             {isSoundOn ? <UnmuteIcon size={18} /> : <MuteIcon size={18} />}
           </button>
 
-          {/* Slot 4: Profile photo */}
-          <div
-            className="flex items-center justify-center rounded-[10px] overflow-hidden"
-            style={{
-              width: 36,
-              height: 36,
-              border: "1.5px solid var(--border)",
-              backgroundColor: "var(--surface)",
-            }}
+          {/* Slot 4: Profile photo (no surrounding box) */}
+          <img
+            src={isDarkMode ? "/profile/1-dithered.jpg" : "/profile/profile-red/1-dithered.jpg"}
+            alt="Profile"
+            className="w-9 h-9 rounded-full object-cover shrink-0 cursor-pointer"
             title="Profile"
-          >
-            <img
-              src="/profile.jpeg"
-              alt="Profile"
-              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-            />
-          </div>
+          />
         </div>
       </div>
 
@@ -291,7 +300,7 @@ export default function HeaderNav() {
           borderBottom: "1px solid var(--border)",
         }}
       >
-        {/* Overview — active */}
+        {/* Overview */}
         <a
           href="#overview"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap font-semibold"

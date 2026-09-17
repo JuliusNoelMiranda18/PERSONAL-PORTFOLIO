@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SmileyIcon,
   PeopleIcon,
@@ -8,7 +8,50 @@ import {
 } from "@primer/octicons-react";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 
+const DARK_DITHER_FRAMES = Array.from({ length: 14 }, (_, i) => `/profile/${i + 1}-dithered.jpg`);
+const RED_DITHER_FRAMES = Array.from({ length: 13 }, (_, i) => `/profile/profile-red/${i + 1}-dithered.jpg`);
+
 export default function OverviewPanel() {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [isDark, setIsDark] = useState(false);
+  const animIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Monitor document.documentElement dark class changes & preload images
+  useEffect(() => {
+    const checkDark = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+    checkDark();
+
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    // Preload both dark and red frame sets
+    [...DARK_DITHER_FRAMES, ...RED_DITHER_FRAMES].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const activeFrames = isDark ? DARK_DITHER_FRAMES : RED_DITHER_FRAMES;
+
+  const handleMouseEnter = () => {
+    if (animIntervalRef.current) clearInterval(animIntervalRef.current);
+    animIntervalRef.current = setInterval(() => {
+      setCurrentFrame((prev) => (prev + 1) % activeFrames.length);
+    }, 250);
+  };
+
+  const handleMouseLeave = () => {
+    if (animIntervalRef.current) {
+      clearInterval(animIntervalRef.current);
+      animIntervalRef.current = null;
+    }
+    setCurrentFrame(0);
+  };
+
   return (
     <div
       className="max-w-[1280px] mx-auto px-4 md:px-8 py-18"
@@ -18,8 +61,13 @@ export default function OverviewPanel() {
         {/* ── Left Column: Profile Sidebar ── */}
         <div className="w-full md:w-[296px] shrink-0 flex flex-col justify-between">
           <div>
-            {/* Profile Picture — fills full sidebar width, circular */}
-            <div className="relative" style={{ width: "100%", aspectRatio: "1 / 1" }}>
+            {/* Profile Picture — circular, frame-by-frame animated on hover */}
+            <div
+              className="relative cursor-pointer select-none"
+              style={{ width: "100%", aspectRatio: "1 / 1" }}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <div
                 className="w-full h-full rounded-full flex items-center justify-center overflow-hidden"
                 style={{
@@ -29,23 +77,10 @@ export default function OverviewPanel() {
                 }}
               >
                 <img
-                  src="/profile.jpeg"
+                  src={activeFrames[currentFrame]}
                   alt="Julius Noel Miranda"
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Show fallback icon if image file isn't in public folder yet
-                    e.currentTarget.style.display = "none";
-                    if (e.currentTarget.nextElementSibling) {
-                      (e.currentTarget.nextElementSibling as HTMLElement).style.display = "flex";
-                    }
-                  }}
                 />
-                <div
-                  className="items-center justify-center text-4xl font-bold"
-                  style={{ display: "none", color: "var(--muted)" }}
-                >
-                  JNM
-                </div>
               </div>
               {/* Smiley status button — overlapping bottom-right */}
               <button
@@ -207,7 +242,7 @@ export default function OverviewPanel() {
                 {/* Description */}
                 <p
                   style={{
-                    fontSize: 25,
+                    fontSize: 23,
                     lineHeight: 1.6,
                     color: "var(--text)",
                     marginTop: 0,
@@ -223,7 +258,7 @@ export default function OverviewPanel() {
                 {/* Quote */}
                 <p
                   style={{
-                    fontSize: 25,
+                    fontSize: 22,
                     fontStyle: "italic",
                     color: "var(--muted)",
                     marginTop: 20,
