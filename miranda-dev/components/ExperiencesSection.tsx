@@ -1,225 +1,211 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
-  GitCommitIcon,
-  RepoIcon,
   FilterIcon,
   StarIcon,
   UnfoldIcon,
+  FoldIcon,
   GraphIcon,
+  RepoIcon,
+  RocketIcon,
+  CodeIcon,
 } from "@primer/octicons-react";
 
+interface TimelineItem {
+  id: string;
+  role: string;
+  company: string;
+  date: string;
+  logoType: "img" | "text";
+  logoSrc?: string;
+  logoText?: string;
+  badgeText?: string;
+  bullets: string[];
+  tags: { label: string; color: string }[];
+}
+
+const EXPERIENCES_DATA: TimelineItem[] = [
+  {
+    id: "flyrank",
+    role: "AI Backend Engineer",
+    company: "Flyrank",
+    date: "June 2026 - July 2026",
+    logoType: "img",
+    logoSrc: "/logo/flyrank_logo.png",
+    badgeText: "5 Projects & 1 Capstone",
+    bullets: [
+      "Engineered high-performance AI backend microservices and intelligent data pipelines for automated search ranking & analytics.",
+      "Developed 5 production projects and 1 capstone AI backend system with robust database models and API integrations.",
+    ],
+    tags: [
+      { label: "Python / AI", color: "#3572A5" },
+      { label: "5 Projects", color: "#2da44e" },
+      { label: "1 Capstone", color: "#8957e5" },
+    ],
+  },
+  {
+    id: "horsemen",
+    role: "Project Lead & Full Stack",
+    company: "The Horsemen",
+    date: "May 2026 - Present",
+    logoType: "text",
+    logoText: "HF",
+    badgeText: "4+ Hackathons",
+    bullets: [
+      "Led the development of 5+ web applications as project lead, contributing as a full-stack on production across industries including research, education, and healthcare.",
+      "Architected full-stack solutions using Next.js (TypeScript, Tailwind) and Supabase.",
+      "Competed in 5+ hackathons, earning finalist placements and securing wins in several events.",
+    ],
+    tags: [
+      { label: "Next.js", color: "#3178c6" },
+      { label: "TypeScript", color: "#3178c6" },
+      { label: "Supabase", color: "#3ecf8e" },
+      { label: "4+ Hackathons", color: "#e34c26" },
+    ],
+  },
+  {
+    id: "gdg",
+    role: "Junior Project Manager",
+    company: "GDG UP Manila",
+    date: "August 2025 - May 2026",
+    logoType: "img",
+    logoSrc: "/logo/gdg_logo.png",
+    badgeText: "2 Tech Events",
+    bullets: [
+      "Oversees the end-to-end execution of technical programs, ensuring timely delivery and effective coordination across teams.",
+      "Co-organized 2 tech events, Info Session 2026: Beyond the Terminal and Unlocking the Black Box: From Theory to Industry Practice, each attracting 50+ participants.",
+      "Hosted Info Session 2026: Beyond the Terminal, leading a two-hour thesis-sharing event.",
+    ],
+    tags: [
+      { label: "Technical Management", color: "#f1e05a" },
+      { label: "2 Tech Events", color: "#e34c26" },
+      { label: "50+ Participants", color: "#2da44e" },
+    ],
+  },
+];
+
 export default function ExperiencesSection() {
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({
+    flyrank: true,
+    horsemen: true,
+    gdg: true,
+  });
+
+  const toggleExpand = (id: string) => {
+    setExpandedMap((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <section
       id="experiences"
-      className="max-w-[1280px] mx-auto px-4 md:px-8 py-5 flex flex-col justify-center scroll-mt-[5px]"
+      className="max-w-[1280px] mx-auto px-4 md:px-8 pt-10 pb-40 flex flex-col justify-center scroll-mt-[112px]"
       style={{ minHeight: "calc(100vh - 112px)", backgroundColor: "var(--bg)" }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
-        {/* ── Left Column: Experience Activity Timeline (2/3 width = 8 cols) ── */}
-        <div className="lg:col-span-8 flex flex-col gap-8 justify-between">
-          <div className="flex flex-col gap-8">
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text)" }}>
-                Experience
-              </h2>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        {/* ── Left Column: Experience Activity Timeline (8 cols) ── */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text)" }}>
+              Experience
+            </h2>
+            <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: "var(--border)", color: "var(--muted)" }}>
+              Click items to expand / collapse
+            </span>
+          </div>
 
-            {/* Month Header / Divider */}
-            <div className="flex items-center gap-4">
-              <span className="text-base font-bold whitespace-nowrap" style={{ color: "var(--text)" }}>
-                September <span style={{ color: "var(--muted)" }}>2026</span>
-              </span>
-              <div className="h-[1px] w-full" style={{ backgroundColor: "var(--border)", opacity: 0.5 }} />
-            </div>
-
-            {/* Timeline Wrapper */}
-            <div className="relative pl-8 flex flex-col gap-8 border-l-2" style={{ borderColor: "var(--border)" }}>
-              {/* Part 1: AI Backend Engineering */}
-              <div className="relative flex flex-col gap-4">
-                <div
-                  className="absolute -left-[45px] top-0 w-9 h-9 rounded-full flex items-center justify-center border-2"
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    borderColor: "var(--border)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  <GitCommitIcon size={16} />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-                      AI Backend Engineer Intern
-                    </h3>
-                    <span className="text-xs md:text-sm px-3 py-1 rounded-full border font-mono font-semibold" style={{ borderColor: "var(--border)", color: "var(--muted)" }}>
-                      16 commits
-                    </span>
-                  </div>
-                  <span style={{ color: "var(--muted)" }}><UnfoldIcon size={16} /></span>
-                </div>
-
-                <div className="flex flex-col gap-3 text-base pl-1">
-                  <div className="flex items-center justify-between gap-4">
-                    <a
-                      href="https://github.com/JuliusNoelMiranda18/NON-PARAMETRIC-STATISTICS"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-semibold hover:underline truncate text-base md:text-lg"
-                      style={{ color: "var(--text)" }}
-                    >
-                      JuliusNoelMiranda18/NON-PARAMETRIC-ST...
-                    </a>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm font-medium underline cursor-pointer" style={{ color: "var(--muted)" }}>
-                        9 commits
+          {/* Timeline Wrapper */}
+          <div className="relative pl-8 flex flex-col gap-10 border-l-2 ml-4" style={{ borderColor: "var(--border)" }}>
+            {EXPERIENCES_DATA.map((item) => {
+              const isExpanded = !!expandedMap[item.id];
+              return (
+                <div key={item.id} className="relative flex flex-col gap-3">
+                  {/* Timeline Node Icon (Logo in Circle) */}
+                  <button
+                    type="button"
+                    onClick={() => toggleExpand(item.id)}
+                    className="absolute -left-[53px] top-0 w-11 h-11 rounded-full flex items-center justify-center border-2 shadow-sm cursor-pointer transition-transform hover:scale-110 shrink-0 overflow-hidden"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                      color: "var(--text)",
+                    }}
+                    title={`Click to ${isExpanded ? "collapse" : "expand"} ${item.company}`}
+                  >
+                    {item.logoType === "img" && item.logoSrc ? (
+                      <img src={item.logoSrc} alt={item.company} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-extrabold text-sm tracking-wider" style={{ color: "var(--text)" }}>
+                        {item.logoText}
                       </span>
-                      <div className="w-28 h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--surface)" }}>
-                        <div className="h-full w-[80%]" style={{ backgroundColor: "#2da44e" }} />
+                    )}
+                  </button>
+
+                  {/* Header Row */}
+                  <div
+                    onClick={() => toggleExpand(item.id)}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none group"
+                  >
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-xl font-bold group-hover:underline" style={{ color: "var(--text)" }}>
+                        {item.role}
+                      </h3>
+                      <span className="text-base font-semibold px-2.5 py-0.5 rounded-md" style={{ backgroundColor: "var(--surface)", color: "var(--text)", border: "1px solid var(--border)" }}>
+                        {item.company}
+                      </span>
+                      {item.badgeText && (
+                        <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border" style={{ borderColor: "var(--border)", color: "var(--muted)" }}>
+                          {item.badgeText}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm font-semibold" style={{ color: "var(--muted)" }}>
+                        {item.date}
+                      </span>
+                      <button type="button" className="p-1 rounded cursor-pointer" style={{ color: "var(--muted)" }}>
+                        {isExpanded ? <FoldIcon size={16} /> : <UnfoldIcon size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Expandable Details Container */}
+                  {isExpanded && (
+                    <div className="flex flex-col gap-4 text-base pt-2 pl-1 animate-fadeIn">
+                      <ul className="flex flex-col gap-2 list-disc list-inside" style={{ color: "var(--text)" }}>
+                        {item.bullets.map((bullet, idx) => (
+                          <li key={idx} className="leading-relaxed text-sm md:text-base">
+                            {bullet}
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Tech & Milestone Tags */}
+                      <div className="flex items-center gap-3 flex-wrap pt-1">
+                        {item.tags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border"
+                            style={{
+                              backgroundColor: "var(--surface)",
+                              borderColor: "var(--border)",
+                              color: "var(--text)",
+                            }}
+                          >
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: tag.color }} />
+                            {tag.label}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4">
-                    <a
-                      href="https://github.com/JuliusNoelMiranda18/PROLOG-"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-semibold hover:underline truncate text-base md:text-lg"
-                      style={{ color: "var(--text)" }}
-                    >
-                      JuliusNoelMiranda18/PROLOG-
-                    </a>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm font-medium underline cursor-pointer" style={{ color: "var(--muted)" }}>
-                        4 commits
-                      </span>
-                      <div className="w-28 h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--surface)" }}>
-                        <div className="h-full w-[45%]" style={{ backgroundColor: "#3fb950" }} />
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </div>
-
-              {/* Part 2: Repositories & Systems Architecture */}
-              <div className="relative flex flex-col gap-4">
-                <div
-                  className="absolute -left-[45px] top-0 w-9 h-9 rounded-full flex items-center justify-center border-2"
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    borderColor: "var(--border)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  <RepoIcon size={16} />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-                    Created 3 core repositories & AI tools
-                  </h3>
-                  <span style={{ color: "var(--muted)" }}><UnfoldIcon size={16} /></span>
-                </div>
-
-                <div className="flex flex-col gap-3 text-base pl-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 truncate">
-                      <span style={{ color: "var(--muted)" }}><RepoIcon size={16} /></span>
-                      <a
-                        href="https://github.com/JuliusNoelMiranda18/PERSONAL-PORTFOLIO"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-semibold hover:underline truncate text-base md:text-lg"
-                        style={{ color: "var(--text)" }}
-                      >
-                        JuliusNoelMiranda18/PERSONAL-PORTFOLIO
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-4 shrink-0 text-sm font-medium" style={{ color: "var(--muted)" }}>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded-full inline-block" style={{ backgroundColor: "#3178c6" }} />
-                        TypeScript
-                      </span>
-                      <span>Sep 13</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 truncate">
-                      <span style={{ color: "var(--muted)" }}><RepoIcon size={16} /></span>
-                      <a
-                        href="https://github.com/JuliusNoelMiranda18/PROLOG-"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-semibold hover:underline truncate text-base md:text-lg"
-                        style={{ color: "var(--text)" }}
-                      >
-                        JuliusNoelMiranda18/PROLOG-
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-4 shrink-0 text-sm font-medium" style={{ color: "var(--muted)" }}>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded-full inline-block" style={{ backgroundColor: "#74283c" }} />
-                        Prolog
-                      </span>
-                      <span>Sep 11</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Part 3: Hackathons & Research Projects */}
-              <div className="relative flex flex-col gap-4">
-                <div
-                  className="absolute -left-[45px] top-0 w-9 h-9 rounded-full flex items-center justify-center border-2"
-                  style={{
-                    backgroundColor: "var(--surface)",
-                    borderColor: "var(--border)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  <GraphIcon size={16} />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-                    5x Hackathons & Data Science Projects
-                  </h3>
-                  <span style={{ color: "var(--muted)" }}><UnfoldIcon size={16} /></span>
-                </div>
-
-                <div className="flex flex-col gap-3 text-base pl-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 truncate">
-                      <span style={{ color: "var(--muted)" }}><RepoIcon size={16} /></span>
-                      <a
-                        href="https://github.com/JuliusNoelMiranda18/NON-PARAMETRIC-STATISTICS"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-semibold hover:underline truncate text-base md:text-lg"
-                        style={{ color: "var(--text)" }}
-                      >
-                        JuliusNoelMiranda18/NON-PARAMETRIC-STATISTICS
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-4 shrink-0 text-sm font-medium" style={{ color: "var(--muted)" }}>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded-full inline-block" style={{ backgroundColor: "#198ce7" }} />
-                        R
-                      </span>
-                      <span>Sep 7</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* ── Right Column: Education Feed (1/3 width = 4 cols) ── */}
+        {/* ── Right Column: Education Feed (4 cols) ── */}
         <div className="lg:col-span-4 flex flex-col gap-6 justify-between">
           <div className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
