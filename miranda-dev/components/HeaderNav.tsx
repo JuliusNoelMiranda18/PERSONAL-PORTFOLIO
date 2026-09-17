@@ -26,7 +26,7 @@ const AVATAR_IMAGES = [
 
 export default function HeaderNav() {
   const [viewerCount, setViewerCount] = useState<number>(2);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [isSoundOn, setIsSoundOn] = useState<boolean>(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 

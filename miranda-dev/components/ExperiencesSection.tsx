@@ -7,8 +7,6 @@ import {
   FoldIcon,
   GraphIcon,
   RepoIcon,
-  RocketIcon,
-  CodeIcon,
 } from "@primer/octicons-react";
 
 interface TimelineItem {
@@ -19,9 +17,11 @@ interface TimelineItem {
   logoType: "img" | "text";
   logoSrc?: string;
   logoText?: string;
-  badgeText?: string;
   bullets: string[];
   tags: { label: string; color: string }[];
+  sideType: string;
+  sideColor: string;
+  sidePeriod: string;
 }
 
 const EXPERIENCES_DATA: TimelineItem[] = [
@@ -32,7 +32,9 @@ const EXPERIENCES_DATA: TimelineItem[] = [
     date: "June 2026 - July 2026",
     logoType: "img",
     logoSrc: "/logo/flyrank_logo.png",
-    badgeText: "5 Projects & 1 Capstone",
+    sideType: "Internship",
+    sideColor: "#3572A5",
+    sidePeriod: "Jun - Jul 2026",
     bullets: [
       "Engineered high-performance AI backend microservices and intelligent data pipelines for automated search ranking & analytics.",
       "Developed 5 production projects and 1 capstone AI backend system with robust database models and API integrations.",
@@ -50,7 +52,9 @@ const EXPERIENCES_DATA: TimelineItem[] = [
     date: "May 2026 - Present",
     logoType: "text",
     logoText: "HF",
-    badgeText: "4+ Hackathons",
+    sideType: "Hackathon",
+    sideColor: "#8957e5",
+    sidePeriod: "May 2026 - Pres",
     bullets: [
       "Led the development of 5+ web applications as project lead, contributing as a full-stack on production across industries including research, education, and healthcare.",
       "Architected full-stack solutions using Next.js (TypeScript, Tailwind) and Supabase.",
@@ -70,7 +74,9 @@ const EXPERIENCES_DATA: TimelineItem[] = [
     date: "August 2025 - May 2026",
     logoType: "img",
     logoSrc: "/logo/gdg_logo.png",
-    badgeText: "2 Tech Events",
+    sideType: "Organization",
+    sideColor: "#ea4335",
+    sidePeriod: "Aug 2025 - May 2026",
     bullets: [
       "Oversees the end-to-end execution of technical programs, ensuring timely delivery and effective coordination across teams.",
       "Co-organized 2 tech events, Info Session 2026: Beyond the Terminal and Unlocking the Black Box: From Theory to Industry Practice, each attracting 50+ participants.",
@@ -85,117 +91,130 @@ const EXPERIENCES_DATA: TimelineItem[] = [
 ];
 
 export default function ExperiencesSection() {
-  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({
-    flyrank: true,
-    horsemen: true,
-    gdg: true,
-  });
+  // Collapsed by default so descriptions are hidden when page starts (matching Image 3 & Image 5)
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
 
+  // Accordion: clicking an item opens it and closes all others
   const toggleExpand = (id: string) => {
-    setExpandedMap((prev) => ({ ...prev, [id]: !prev[id] }));
+    setExpandedMap((prev) => ({
+      [id]: !prev[id],
+    }));
   };
+
+  // Fixed total timeline height: Start-to-finish length NEVER extends, and other roles move closer when an item expands!
+  const TIMELINE_HEIGHT = 410;
 
   return (
     <section
       id="experiences"
-      className="max-w-[1280px] mx-auto px-4 md:px-8 pt-10 pb-40 flex flex-col justify-center scroll-mt-[112px]"
+      className="max-w-[1280px] mx-auto px-4 md:px-8 pt-15 pb-40 flex flex-col justify-center scroll-mt-0"
       style={{ minHeight: "calc(100vh - 112px)", backgroundColor: "var(--bg)" }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* ── Left Column: Experience Activity Timeline (8 cols) ── */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          {/* Header row aligned with Education header */}
+          <div className="h-10 flex items-center">
             <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text)" }}>
               Experience
             </h2>
-            <span className="text-xs font-mono px-3 py-1 rounded-full border" style={{ borderColor: "var(--border)", color: "var(--muted)" }}>
-              Click items to expand / collapse
-            </span>
           </div>
 
-          {/* Timeline Wrapper */}
-          <div className="relative pl-8 flex flex-col gap-10 border-l-2 ml-4" style={{ borderColor: "var(--border)" }}>
+          {/* Timeline Wrapper — Height from start to finish NEVER extends */}
+          {/* ↓ Adjust TIMELINE_HEIGHT above to change the total length of the line */}
+          <div
+            className="relative pl-12 flex flex-col justify-between border-l-2 ml-7 mt-10 transition-all duration-300"
+            style={{
+              height: TIMELINE_HEIGHT,
+              borderColor: "var(--border)",
+            }}
+          >
             {EXPERIENCES_DATA.map((item) => {
               const isExpanded = !!expandedMap[item.id];
               return (
-                <div key={item.id} className="relative flex flex-col gap-3">
-                  {/* Timeline Node Icon (Logo in Circle) */}
-                  <button
-                    type="button"
-                    onClick={() => toggleExpand(item.id)}
-                    className="absolute -left-[53px] top-0 w-11 h-11 rounded-full flex items-center justify-center border-2 shadow-sm cursor-pointer transition-transform hover:scale-110 shrink-0 overflow-hidden"
-                    style={{
-                      backgroundColor: "var(--surface)",
-                      borderColor: "var(--border)",
-                      color: "var(--text)",
-                    }}
-                    title={`Click to ${isExpanded ? "collapse" : "expand"} ${item.company}`}
-                  >
-                    {item.logoType === "img" && item.logoSrc ? (
-                      <img src={item.logoSrc} alt={item.company} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="font-extrabold text-sm tracking-wider" style={{ color: "var(--text)" }}>
-                        {item.logoText}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Header Row */}
+                <div
+                  key={item.id}
+                  className="relative flex flex-col justify-start transition-all duration-300"
+                >
+                  {/* Header Row: Centered with Logo and text */}
                   <div
                     onClick={() => toggleExpand(item.id)}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none group"
+                    className="relative min-h-[56px] flex items-center justify-between gap-4 cursor-pointer select-none py-1"
                   >
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-xl font-bold group-hover:underline" style={{ color: "var(--text)" }}>
-                        {item.role}
-                      </h3>
-                      <span className="text-base font-semibold px-2.5 py-0.5 rounded-md" style={{ backgroundColor: "var(--surface)", color: "var(--text)", border: "1px solid var(--border)" }}>
-                        {item.company}
-                      </span>
-                      {item.badgeText && (
-                        <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border" style={{ borderColor: "var(--border)", color: "var(--muted)" }}>
-                          {item.badgeText}
+                    {/* Timeline Node Icon (Logo in Circle) — centered to the text row */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand(item.id);
+                      }}
+                      className="absolute -left-[76px] top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center border-2 shadow-sm cursor-pointer hover:opacity-80 shrink-0 overflow-hidden"
+                      style={{
+                        backgroundColor: "var(--surface)",
+                        borderColor: "var(--border)",
+                        color: "var(--text)",
+                        transition: "opacity 0.15s ease",
+                      }}
+                      title={`Click to ${isExpanded ? "collapse" : "expand"} ${item.company}`}
+                    >
+                      {item.logoType === "img" && item.logoSrc ? (
+                        <img src={item.logoSrc} alt={item.company} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-extrabold text-base tracking-wider" style={{ color: "var(--text)" }}>
+                          {item.logoText}
                         </span>
                       )}
-                    </div>
+                    </button>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm font-semibold" style={{ color: "var(--muted)" }}>
+                    <div className="flex items-center gap-6 md:gap-8 flex-1 min-w-0">
+                      {/* Date — fixed width so all dates align */}
+                      <span className="text-sm md:text-base font-medium shrink-0 w-48 md:w-52" style={{ color: "var(--muted)" }}>
                         {item.date}
                       </span>
-                      <button type="button" className="p-1 rounded cursor-pointer" style={{ color: "var(--muted)" }}>
+
+                      {/* Role Title */}
+                      <h3 className="text-base md:text-lg font-bold truncate" style={{ color: "var(--text)" }}>
+                        {item.role}
+                      </h3>
+                    </div>
+
+                    {/* Company + expand icon (fixed width column so all align) */}
+                    <div className="flex items-center justify-between gap-3 shrink-0 w-44 md:w-48">
+                      <span className="text-sm md:text-base font-semibold" style={{ color: "var(--text)" }}>
+                        {item.company}
+                      </span>
+                      <span style={{ color: "var(--muted)" }}>
                         {isExpanded ? <FoldIcon size={16} /> : <UnfoldIcon size={16} />}
-                      </button>
+                      </span>
                     </div>
                   </div>
 
-                  {/* Expandable Details Container */}
+                  {/* Expandable Details — Side-by-side: Description on Left, Clean Label on Right */}
                   {isExpanded && (
-                    <div className="flex flex-col gap-4 text-base pt-2 pl-1 animate-fadeIn">
-                      <ul className="flex flex-col gap-2 list-disc list-inside" style={{ color: "var(--text)" }}>
+                    <div className="flex flex-col md:flex-row items-start justify-between gap-6 pt-1.5 pb-2 pl-1 w-full">
+                      {/* Left: Description Bullets */}
+                      <div className="flex flex-col gap-2 flex-1 min-w-0">
                         {item.bullets.map((bullet, idx) => (
-                          <li key={idx} className="leading-relaxed text-sm md:text-base">
-                            {bullet}
-                          </li>
+                          <div key={idx} className="flex items-start gap-3">
+                            <span style={{ color: "var(--muted)" }} className="shrink-0 mt-1">
+                              <RepoIcon size={16} />
+                            </span>
+                            <p className="text-sm md:text-base leading-relaxed" style={{ color: "var(--text)", textAlign: "justify" }}>
+                              {bullet}
+                            </p>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
 
-                      {/* Tech & Milestone Tags */}
-                      <div className="flex items-center gap-3 flex-wrap pt-1">
-                        {item.tags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border"
-                            style={{
-                              backgroundColor: "var(--surface)",
-                              borderColor: "var(--border)",
-                              color: "var(--text)",
-                            }}
-                          >
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: tag.color }} />
-                            {tag.label}
-                          </span>
-                        ))}
+                      {/* Right: Dot + Type label (no textbox border/bg), right-aligned with the collapse SVG */}
+                      <div className="flex items-center justify-end gap-2 shrink-0 self-start mt-1 w-44 md:w-48">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: item.sideColor }}
+                        />
+                        <span className="text-sm font-semibold tracking-wide" style={{ color: "var(--text)" }}>
+                          {item.sideType}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -208,7 +227,7 @@ export default function ExperiencesSection() {
         {/* ── Right Column: Education Feed (4 cols) ── */}
         <div className="lg:col-span-4 flex flex-col gap-6 justify-between">
           <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
+            <div className="h-10 flex items-center justify-between">
               <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text)" }}>
                 Education
               </h2>

@@ -30,7 +30,7 @@ body.dark {
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 112px;
+  scroll-padding-top: 0;
 }
 
 body {

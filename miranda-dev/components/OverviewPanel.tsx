@@ -13,7 +13,7 @@ const RED_DITHER_FRAMES = Array.from({ length: 13 }, (_, i) => `/profile/profile
 
 export default function OverviewPanel() {
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const animIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Monitor document.documentElement dark class changes & preload images
@@ -55,8 +55,8 @@ export default function OverviewPanel() {
   return (
     <div
       id="overview"
-      className="max-w-[1280px] mx-auto px-4 md:px-8 py-18 scroll-mt-[130px]"
-      style={{ backgroundColor: "var(--bg)", minHeight: "calc(100vh - 112px)" }}
+      className="max-w-[1280px] mx-auto px-4 md:px-8 py-16"
+      style={{ backgroundColor: "var(--bg)" }}
     >
       <div className="flex flex-col md:flex-row gap-8 items-stretch">
         {/* ── Left Column: Profile Sidebar ── */}
