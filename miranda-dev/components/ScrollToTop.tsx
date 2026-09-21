@@ -8,13 +8,12 @@ import { useEffect } from "react";
  */
 export default function ScrollToTop() {
   useEffect(() => {
-    // Disable browser scroll restoration so the page always starts at top
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
     }
-    // Scroll to top immediately on mount
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, []);
 
   return null;
 }
+

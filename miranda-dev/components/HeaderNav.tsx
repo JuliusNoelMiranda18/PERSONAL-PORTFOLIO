@@ -24,13 +24,15 @@ const AVATAR_IMAGES = [
   "/viewers/gh5.jpeg",
 ];
 
+/**
+ * Header navigation bar providing branding, real-time viewer count, theme toggling, sound effects, and section navigation tabs.
+ */
 export default function HeaderNav() {
   const [viewerCount, setViewerCount] = useState<number>(2);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
   const [isSoundOn, setIsSoundOn] = useState<boolean>(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // ── Web Audio: click sound ──
   const playClick = () => {
     const ctx = audioCtxRef.current;
     if (!ctx) return;
@@ -47,7 +49,6 @@ export default function HeaderNav() {
     osc.stop(ctx.currentTime + 0.1);
   };
 
-  // ── Web Audio: keystroke sound ──
   const playKey = () => {
     const ctx = audioCtxRef.current;
     if (!ctx) return;
@@ -65,7 +66,6 @@ export default function HeaderNav() {
     src.start();
   };
 
-  // ── Keydown listener for typing sounds ──
   useEffect(() => {
     if (!isSoundOn) return;
     const onKey = () => playKey();
@@ -73,10 +73,8 @@ export default function HeaderNav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isSoundOn]);
 
-  // ── Toggle sound on/off ──
   const toggleSound = () => {
     if (!isSoundOn) {
-      // Create AudioContext on first user gesture
       if (!audioCtxRef.current) {
         audioCtxRef.current = new AudioContext();
       }
@@ -84,7 +82,6 @@ export default function HeaderNav() {
     setIsSoundOn((prev) => !prev);
   };
 
-  // ── Sync Dark Mode state with html class ──
   useEffect(() => {
     const checkDark = () => {
       setIsDarkMode(document.documentElement.classList.contains("dark"));
@@ -95,7 +92,6 @@ export default function HeaderNav() {
     return () => observer.disconnect();
   }, []);
 
-  // ── Instant Theme Toggle ──
   const toggleTheme = () => {
     if (isSoundOn) playClick();
     const nextDark = !isDarkMode;
@@ -107,7 +103,6 @@ export default function HeaderNav() {
     }
   };
 
-  // ── Supabase Realtime Presence Tracking ──
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -152,12 +147,10 @@ export default function HeaderNav() {
 
   return (
     <header style={{ backgroundColor: "var(--bg)" }}>
-      {/* ── Top Bar ── */}
       <div
         className="flex items-center justify-between px-4 md:px-8"
         style={{ height: 64 }}
       >
-        {/* Left: Hamburger + GitHub Logo + Username */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -193,10 +186,7 @@ export default function HeaderNav() {
           </span>
         </div>
 
-        {/* Right: Four Rounded Box Containers in specified order */}
-        {/* Slot 1: Viewer Count | Slot 2: Dark Mode | Slot 3: Sounds | Slot 4: Profile */}
         <div className="flex items-center gap-2.5">
-          {/* Slot 1: Viewer Count (Supabase Realtime Presence) */}
           <div
             className="flex items-center gap-2 px-3 rounded-[14px] select-none"
             style={{
@@ -206,7 +196,6 @@ export default function HeaderNav() {
               color: "var(--text)",
             }}
           >
-            {/* Stacked Overlapping Circular Avatars */}
             <div className="flex items-center">
               {AVATAR_IMAGES.slice(0, visibleAvatarsCount).map((src, idx) => (
                 <img
@@ -222,7 +211,6 @@ export default function HeaderNav() {
                 />
               ))}
 
-              {/* Plus Badge if viewerCount > 5 */}
               {isOverFive && (
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 -ml-2 select-none"
@@ -237,7 +225,6 @@ export default function HeaderNav() {
               )}
             </div>
 
-            {/* Viewer Count Text */}
             <span
               className="text-sm font-semibold whitespace-nowrap ml-1"
               style={{ color: "var(--text)" }}
@@ -246,7 +233,6 @@ export default function HeaderNav() {
             </span>
           </div>
 
-          {/* Slot 2: Dark Mode / Light Mode toggle */}
           <button
             type="button"
             onClick={toggleTheme}
@@ -264,7 +250,6 @@ export default function HeaderNav() {
             {isDarkMode ? <SunIcon size={18} /> : <MoonIcon size={18} />}
           </button>
 
-          {/* Slot 3: Sound toggle */}
           <button
             type="button"
             onClick={() => { if (isSoundOn) playClick(); toggleSound(); }}
@@ -282,7 +267,6 @@ export default function HeaderNav() {
             {isSoundOn ? <UnmuteIcon size={18} /> : <MuteIcon size={18} />}
           </button>
 
-          {/* Slot 4: Profile photo (no surrounding box) */}
           <img
             src={isDarkMode ? "/profile/1-dithered.jpg" : "/profile/profile-red/1-dithered.jpg"}
             alt="Profile"
@@ -292,7 +276,6 @@ export default function HeaderNav() {
         </div>
       </div>
 
-      {/* ── Sub-nav / Tabs ── */}
       <div
         className="px-4 md:px-8 flex items-end overflow-x-auto"
         style={{
@@ -300,7 +283,6 @@ export default function HeaderNav() {
           borderBottom: "1px solid var(--border)",
         }}
       >
-        {/* Overview */}
         <a
           href="#overview"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap font-semibold"
@@ -314,7 +296,6 @@ export default function HeaderNav() {
           Overview
         </a>
 
-        {/* Experiences */}
         <a
           href="#experiences"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
@@ -328,7 +309,6 @@ export default function HeaderNav() {
           Experiences
         </a>
 
-        {/* Projects */}
         <a
           href="#projects"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
@@ -342,7 +322,6 @@ export default function HeaderNav() {
           Projects
         </a>
 
-        {/* Achievements */}
         <a
           href="#achievements"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
@@ -356,7 +335,6 @@ export default function HeaderNav() {
           Achievements
         </a>
 
-        {/* Connect */}
         <a
           href="#connect"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"

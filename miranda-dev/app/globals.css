@@ -1,10 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* ── TRANSITION SPEED DURATION ────────────────────────────────────────── */
-  /* Change this value (e.g. 0.6s, 0.8s, 1s) to adjust transition speed.    */
   --theme-transition-time: 0s;
-  /* ─────────────────────────────────────────────────────────────────────── */
 
   --bg: #f5ebd0;
   --surface: #ede0c4;
@@ -43,7 +40,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* SVGs inherit color from their parent so they change with the theme toggle */
 svg {
   fill: currentColor;
 }

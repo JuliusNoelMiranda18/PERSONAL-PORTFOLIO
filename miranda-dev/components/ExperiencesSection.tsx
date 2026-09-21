@@ -90,11 +90,11 @@ const EXPERIENCES_DATA: TimelineItem[] = [
   },
 ];
 
+/**
+ * Experiences section featuring an interactive work experience timeline and an education history feed.
+ */
 export default function ExperiencesSection() {
-  // Collapsed by default so descriptions are hidden when page starts (matching Image 3 & Image 5)
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
-
-  // Theme listener to switch logos automatically when toggling between dark and light modes
   const [isDark, setIsDark] = useState<boolean>(true);
 
   useEffect(() => {
@@ -115,15 +115,12 @@ export default function ExperiencesSection() {
     return item.logoSrc;
   };
 
-  // Accordion: clicking an item opens it and closes all others
   const toggleExpand = (id: string) => {
     setExpandedMap((prev) => ({
       [id]: !prev[id],
     }));
   };
 
-  // Baseline timeline height: Start-to-finish length aligns cleanly with Education
-  // Each role has min-h-[80px] and shrink-0 so circular logos (w-16 h-16 = 64px) can NEVER overlap!
   const TIMELINE_HEIGHT = 480;
 
   return (
@@ -132,19 +129,14 @@ export default function ExperiencesSection() {
       className="max-w-[1280px] mx-auto px-4 md:px-8 pt-15 pb-40 flex flex-col justify-center scroll-mt-0"
       style={{ minHeight: "calc(100vh - 112px)", backgroundColor: "var(--bg)" }}
     >
-      {/* ↓ ADJUST GAP HERE: gap-14 controls spacing between Experience and Education */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 items-start">
-        {/* ── Left Column: Experience Activity Timeline (8 cols) ── */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          {/* Header row aligned with Education header */}
           <div className="h-10 flex items-center">
             <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--text)" }}>
               Experience
             </h2>
           </div>
 
-          {/* Timeline Wrapper — Baseline height matches Education, items have min-h to prevent logo collision */}
-          {/* ↓ Adjust TIMELINE_HEIGHT above to change the baseline length of the line */}
           <div
             className="relative pl-12 flex flex-col justify-between border-l-2 ml-7 mt-10 transition-all duration-300"
             style={{
@@ -159,13 +151,10 @@ export default function ExperiencesSection() {
                   key={item.id}
                   className="relative flex flex-col justify-start shrink-0 min-h-[80px] transition-all duration-300"
                 >
-                  {/* Header Row: Centered with Logo and text */}
                   <div
                     onClick={() => toggleExpand(item.id)}
                     className="relative min-h-[80px] flex items-center justify-between gap-4 cursor-pointer select-none py-1"
                   >
-                    {/* Timeline Node Icon (Logo in Circle) — centered to the text row */}
-                    {/* w-16 h-16 (64px). Because header is min-h-[80px] and shrink-0, logos will NEVER touch or overlap! */}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -191,18 +180,15 @@ export default function ExperiencesSection() {
                     </button>
 
                     <div className="flex items-center gap-6 md:gap-8 flex-1 min-w-0">
-                      {/* Date — fixed width so all dates align */}
                       <span className="text-sm md:text-base font-medium shrink-0 w-48 md:w-52" style={{ color: "var(--muted)" }}>
                         {item.date}
                       </span>
 
-                      {/* Role Title */}
                       <h3 className="text-base md:text-lg font-bold truncate" style={{ color: "var(--text)" }}>
                         {item.role}
                       </h3>
                     </div>
 
-                    {/* Company + expand icon (fixed width column so all align) */}
                     <div className="flex items-center justify-between gap-3 shrink-0 w-44 md:w-48">
                       <span className="text-sm md:text-base font-semibold" style={{ color: "var(--text)" }}>
                         {item.company}
@@ -213,10 +199,8 @@ export default function ExperiencesSection() {
                     </div>
                   </div>
 
-                  {/* Expandable Details — Side-by-side: Description on Left, Clean Label on Right */}
                   {isExpanded && (
                     <div className="flex flex-col md:flex-row items-start justify-between gap-6 pt-1.5 pb-2 pl-1 w-full">
-                      {/* Left: Description Bullets */}
                       <div className="flex flex-col gap-2 flex-1 min-w-0">
                         {item.bullets.map((bullet, idx) => (
                           <div key={idx} className="flex items-start gap-3">
@@ -230,7 +214,6 @@ export default function ExperiencesSection() {
                         ))}
                       </div>
 
-                      {/* Right: Dot + Type label (no textbox border/bg), right-aligned with the collapse SVG */}
                       <div className="flex items-center justify-end gap-2 shrink-0 self-start mt-1 w-44 md:w-48">
                         <span
                           className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -248,7 +231,6 @@ export default function ExperiencesSection() {
           </div>
         </div>
 
-        {/* ── Right Column: Education Feed (4 cols) ── */}
         <div className="lg:col-span-4 flex flex-col gap-6 justify-between">
           <div className="flex flex-col gap-6">
             <div className="h-10 flex items-center justify-between">
@@ -269,7 +251,6 @@ export default function ExperiencesSection() {
               </button>
             </div>
 
-            {/* Feed Card Container */}
             <div
               className="rounded-xl border-2 overflow-hidden flex flex-col divide-y-2 flex-1"
               style={{
@@ -277,7 +258,6 @@ export default function ExperiencesSection() {
                 borderColor: "var(--border)",
               }}
             >
-              {/* Card 1: Tertiary Education (UP Manila) */}
               <div className="p-5 flex flex-col gap-3">
                 <div className="flex items-center justify-between text-sm font-medium" style={{ color: "var(--muted)" }}>
                   <div className="flex items-center gap-2">
@@ -288,7 +268,6 @@ export default function ExperiencesSection() {
 
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {/* ↓ ADJUST EDUCATION AVATAR SIZE HERE: w-10 h-10 */}
                     <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--border)" }}>
                       <img
                         src={isDark ? "/logo/tertiary_black.png" : "/logo/tertiary_red.png"}
@@ -301,7 +280,6 @@ export default function ExperiencesSection() {
                     </span>
                   </div>
 
-                  {/* Star Button matching Image 2 */}
                   <button
                     type="button"
                     className="flex items-center gap-1.5 px-3 py-1 text-sm font-semibold rounded-lg border-2 cursor-pointer shrink-0 transition-opacity hover:opacity-80"
@@ -332,7 +310,6 @@ export default function ExperiencesSection() {
                 </div>
               </div>
 
-              {/* Card 2: Secondary Education */}
               <div className="p-5 flex flex-col gap-3">
                 <div className="flex items-center justify-between text-sm font-medium" style={{ color: "var(--muted)" }}>
                   <div className="flex items-center gap-2">
@@ -343,7 +320,6 @@ export default function ExperiencesSection() {
 
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {/* ↓ ADJUST EDUCATION AVATAR SIZE HERE: w-10 h-10 */}
                     <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--border)" }}>
                       <img
                         src={isDark ? "/logo/secondary_black.png" : "/logo/secondary_red.png"}
@@ -356,7 +332,6 @@ export default function ExperiencesSection() {
                     </span>
                   </div>
 
-                  {/* Star Button matching Image 2 */}
                   <button
                     type="button"
                     className="flex items-center gap-1.5 px-3 py-1 text-sm font-semibold rounded-lg border-2 cursor-pointer shrink-0 transition-opacity hover:opacity-80"

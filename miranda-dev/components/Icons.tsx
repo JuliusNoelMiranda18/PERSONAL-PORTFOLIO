@@ -1,3 +1,6 @@
+/**
+ * Reusable SVG icon components for GitHub-themed interface and navigation elements.
+ */
 import React from "react";
 
 export const GithubLogo = ({ className = "w-8 h-8" }: { className?: string }) => (

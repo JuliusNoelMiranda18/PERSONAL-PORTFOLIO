@@ -11,12 +11,14 @@ import { FaLinkedin, FaGithub } from "react-icons/fa";
 const DARK_DITHER_FRAMES = Array.from({ length: 14 }, (_, i) => `/profile/${i + 1}-dithered.jpg`);
 const RED_DITHER_FRAMES = Array.from({ length: 13 }, (_, i) => `/profile/profile-red/${i + 1}-dithered.jpg`);
 
+/**
+ * Overview panel displaying user profile details, bio, GitHub-style README container, and summary metrics.
+ */
 export default function OverviewPanel() {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isDark, setIsDark] = useState(true);
   const animIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Monitor document.documentElement dark class changes & preload images
   useEffect(() => {
     const checkDark = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
@@ -26,7 +28,6 @@ export default function OverviewPanel() {
     const observer = new MutationObserver(checkDark);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-    // Preload both dark and red frame sets
     [...DARK_DITHER_FRAMES, ...RED_DITHER_FRAMES].forEach((src) => {
       const img = new Image();
       img.src = src;
@@ -59,10 +60,8 @@ export default function OverviewPanel() {
       style={{ backgroundColor: "var(--bg)" }}
     >
       <div className="flex flex-col md:flex-row gap-8 items-stretch">
-        {/* ── Left Column: Profile Sidebar ── */}
         <div className="w-full md:w-[296px] shrink-0 flex flex-col justify-between">
           <div>
-            {/* Profile Picture — circular, frame-by-frame animated on hover */}
             <div
               className="relative cursor-pointer select-none"
               style={{ width: "100%", aspectRatio: "1 / 1" }}
@@ -83,7 +82,6 @@ export default function OverviewPanel() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              {/* Smiley status button — overlapping bottom-right */}
               <button
                 type="button"
                 aria-label="Set status"
@@ -102,7 +100,6 @@ export default function OverviewPanel() {
               </button>
             </div>
 
-            {/* Display Name & Username */}
             <div className="mt-4">
               <h1
                 className="font-semibold leading-tight"
@@ -118,7 +115,6 @@ export default function OverviewPanel() {
               </p>
             </div>
 
-            {/* Download Resume Button */}
             <div className="mt-4">
               <a
                 href="/resume.pdf"
@@ -134,7 +130,6 @@ export default function OverviewPanel() {
               </a>
             </div>
 
-            {/* Followers & Following */}
             <div
               className="mt-4 flex items-center gap-2 text-sm"
               style={{ color: "var(--muted)" }}
@@ -152,12 +147,9 @@ export default function OverviewPanel() {
               </span>
             </div>
 
-            {/* Divider */}
             <div className="my-4" style={{ borderTop: "1px solid var(--border)" }} />
 
-            {/* Metadata Links */}
             <div className="flex flex-col gap-2 text-sm" style={{ color: "var(--text)" }}>
-              {/* GitHub */}
               <div className="flex items-center gap-2.5">
                 <FaGithub size={16} className="shrink-0" style={{ color: "var(--muted)" }} />
                 <a
@@ -171,7 +163,6 @@ export default function OverviewPanel() {
                 </a>
               </div>
 
-              {/* Email */}
               <div className="flex items-center gap-2.5">
                 <MailIcon size={16} fill="var(--muted)" className="shrink-0" />
                 <a
@@ -183,7 +174,6 @@ export default function OverviewPanel() {
                 </a>
               </div>
 
-              {/* LinkedIn */}
               <div className="flex items-center gap-2.5">
                 <FaLinkedin size={16} className="shrink-0" style={{ color: "var(--muted)" }} />
                 <a
@@ -200,11 +190,9 @@ export default function OverviewPanel() {
           </div>
         </div>
 
-        {/* ── Right Column: README ── */}
         <div className="flex-1 w-full flex flex-col">
           <div className="rounded-md overflow-hidden flex-1 flex flex-col justify-between" style={{ border: "1px solid var(--border)" }}>
             <div>
-              {/* README Header */}
               <div
                 className="flex items-center justify-between px-4 py-3"
                 style={{ backgroundColor: "var(--surface)", borderBottom: "1px solid var(--border)" }}
@@ -222,12 +210,10 @@ export default function OverviewPanel() {
                 </button>
               </div>
 
-              {/* README Body */}
               <div
                 className="px-6 pt-10 pb-6"
                 style={{ backgroundColor: "var(--bg)" }}
               >
-                {/* Greeting */}
                 <h2
                   style={{
                     fontSize: 50,
@@ -240,7 +226,6 @@ export default function OverviewPanel() {
                   Hi, I&apos;m Joules
                 </h2>
 
-                {/* Description */}
                 <p
                   style={{
                     fontSize: 23,
@@ -256,7 +241,6 @@ export default function OverviewPanel() {
                   unafraid to push the boundaries of where AI can go.
                 </p>
 
-                {/* Quote */}
                 <p
                   style={{
                     fontSize: 22,
@@ -271,7 +255,6 @@ export default function OverviewPanel() {
               </div>
             </div>
 
-            {/* Stats Row — pinned at bottom to match alignment */}
             <div className="px-6 pb-10" style={{ backgroundColor: "var(--bg)" }}>
               <div
                 style={{

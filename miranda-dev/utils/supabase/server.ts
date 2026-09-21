@@ -4,6 +4,9 @@ import { cookies } from "next/headers";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
+/**
+ * Creates a Supabase client for Server Components, Route Handlers, and Server Actions.
+ */
 export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) => {
   return createServerClient(
     supabaseUrl!,
@@ -19,7 +22,6 @@ export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) =
               cookieStore.set(name, value, options)
             );
           } catch {
-            // The `setAll` method was called from a Server Component.
           }
         },
       },

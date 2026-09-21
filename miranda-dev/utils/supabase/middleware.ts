@@ -4,6 +4,9 @@ import { type NextRequest, NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
+/**
+ * Creates a Supabase client for Next.js middleware to manage and refresh session cookies.
+ */
 export const createClient = (request: NextRequest) => {
   let supabaseResponse = NextResponse.next({
     request: {
