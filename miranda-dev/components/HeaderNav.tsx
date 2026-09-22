@@ -310,19 +310,6 @@ export default function HeaderNav() {
         </a>
 
         <a
-          href="#projects"
-          className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
-          style={{
-            fontSize: 14,
-            color: "var(--muted)",
-            borderBottom: "2px solid transparent",
-          }}
-        >
-          <TableIcon size={16} />
-          Projects
-        </a>
-
-        <a
           href="#achievements"
           className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
           style={{
@@ -333,6 +320,19 @@ export default function HeaderNav() {
         >
           <StarIcon size={16} />
           Achievements
+        </a>
+
+        <a
+          href="#projects"
+          className="flex items-center gap-2 px-3 pt-3 pb-2 whitespace-nowrap"
+          style={{
+            fontSize: 14,
+            color: "var(--muted)",
+            borderBottom: "2px solid transparent",
+          }}
+        >
+          <TableIcon size={16} />
+          Projects
         </a>
 
         <a
