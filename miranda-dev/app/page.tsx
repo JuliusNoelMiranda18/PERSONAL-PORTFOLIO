@@ -1,6 +1,7 @@
 import HeaderNav from "@/components/HeaderNav";
 import OverviewPanel from "@/components/OverviewPanel";
 import ExperiencesSection from "@/components/ExperiencesSection";
+import AchievementsSection from "@/components/AchievementsSection";
 import ScrollToTop from "@/components/ScrollToTop";
 
 /**
@@ -15,6 +16,7 @@ export default function Home() {
         <OverviewPanel />
       </div>
       <ExperiencesSection />
+      <AchievementsSection />
     </main>
   );
 }
